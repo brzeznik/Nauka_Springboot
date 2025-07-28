@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: projekt1-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=projekt1
+      - POSTGRES_USER=uzytkownik
+      - POSTGRES_PASSWORD=haslo
+      - POSTGRES_HOST_AUTH_METHOD=trust # <-- Dodana linia
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  app:
+    container_name: projekt1-app
+    image: projekt1-app # Użyjemy obrazu zbudowanego z Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/projekt1
+      - SPRING_DATASOURCE_USERNAME=uzytkownik
+      - SPRING_DATASOURCE_PASSWORD=haslo
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - db
+
+volumes:
+  postgres-data:
